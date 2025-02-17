@@ -106,7 +106,7 @@ tourSchema.pre(/^find/, async function(next) {
 
     const updated = this.getUpdate?.();
     console.log("====UPDATED====",updated);
-    if (updated) {
+    if (updated && (updated["$set"].priceDiscount ||updated["$set"].price)) {
         console.log("pre of find");
         const docToUpdate = await this.model.findOne(this.getQuery(), {}, { _isInternal: true });
     
@@ -122,7 +122,6 @@ tourSchema.pre(/^find/, async function(next) {
         console.log("Query: ", this.getQuery());
         console.log("Document to Update: ", docToUpdate);
     }
-
 
     next();
 })

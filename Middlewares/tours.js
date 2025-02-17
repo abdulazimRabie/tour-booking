@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const fs = require("fs");
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
 
+const AppError = require("../utils/appError");
+
 exports.topFiveTours = (req, res, next) => {
     req.query = {
         ...req.query,
@@ -13,6 +15,10 @@ exports.topFiveTours = (req, res, next) => {
 }
 
 exports.validateTour = async (req, res, next, id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        // return next(new AppError("This ID CANNOT be casted!! SORRY"));
+        return next(new mongoose.Error.CastError('ObjectId', req.params.id));
+    }
     // const tour_id = +id;
     // const tour = tours.find(t => t.id == tour_id);
     console.log("====PARAM MIDDLEWARE====");

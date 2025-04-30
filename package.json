@@ -5,17 +5,21 @@
   "main": "app.js",
   "scripts": {
     "start": "npx nodemon server.js",
-    "debug" : "ndb node combinations.js",
-    "start::prod" : "NODE_ENV=production npx nodemon server.js"
+    "debug": "ndb node combinations.js",
+    "start:prod": "NODE_ENV=production npx nodemon server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.0",
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.7"
+    "nodemailer": "^6.10.1",
+    "nodemon": "^3.1.7",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "ndb": "^0.2.4"

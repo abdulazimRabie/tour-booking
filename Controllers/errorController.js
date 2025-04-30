@@ -38,6 +38,9 @@ const handleValidationErrorDB = (error) => {
     return new AppError(errMsgs.join(" ||| ", 400));
 }
 
+const handelJsonWebTokenError = _ => new AppError('Not Authorized User', 401)
+
+const handleExpiredToken = _ => new AppError("Token has been expired, please login again!", 401)
 
 module.exports = (error, req, res, next) => {
     console.log("GLOBAL HANDLING ERROR IS WORKING");
@@ -52,6 +55,9 @@ module.exports = (error, req, res, next) => {
         let err = {...error};
         if (err.name === "CastError") err = handleCastErrorDB(err);
         if (err.name === "ValidationError") err = handleValidationErrorDB(err);
+        if (err.name === "JsonWebTokenError") err = handelJsonWebTokenError();
+        if (err.name === "TokenExpiredError") err = handleExpiredToken()
+
         sendErrorProd(err, res);
     }
 

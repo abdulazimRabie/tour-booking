@@ -12,6 +12,15 @@ function signToken(payload) {
     return jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: process.env.TOKEN_EXP});
 }
 
+function createSendCookie(token, res) {
+    const cookieOptions = {
+        expires: new Date(Date.now() + process.env.TOKEN_COOKIE_EXP * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    }
+    if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+    res.cookie("jwt", token, cookieOptions)
+}
+
 exports.signup = catchAsync(async (req, res, next) => {
     // THIS LINE OF CODE IS A BIG MISTAKE. DON'T STORE ALL DATA USER ENTERS. PREVENT HIME FROM BEING AN ADMIN, FOR EXAMPLE
     // const newUser = await User.create({...req.body});
@@ -31,12 +40,14 @@ exports.signup = catchAsync(async (req, res, next) => {
         console.log("NEW USER WITH TRANSACTION : \n", newUser);
     
         // 2. set a token to him
-
         const token = signToken({id: newUser[0]._id});
+        createSendCookie(token, res);
 
         session.commitTransaction();
         session.endSession();
-    
+
+        newUser[0].password = undefined;
+
         res.status(201).json({
             status: "success",
             token,
@@ -67,6 +78,7 @@ exports.login = catchAsync(async (req, res, next) => {
     const token = signToken({id: user._id});
     user.password = undefined;
     // 3. everything is ok, send our regards
+    createSendCookie(token, res);
     res.status(200).json({
         status: "success",
         token,
@@ -193,6 +205,7 @@ exports.resetPassword = catchAsync (async (req, res, next) => {
     // 5. log user in & send JWT
     // const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: process.env.TOKEN_EXP})
     const token = signToken({id: user._id})
+    createSendCookie(token, res);
     res.status(200).json({
         status: "success",
         token
@@ -220,6 +233,7 @@ exports.updatePassword = catchAsync (async (req, res, next) => {
     
     // 7. log in user by sending new jwt
     const token = signToken({id: req.user.id});
+    createSendCookie(token, res);
     res.status(200).json({
         status: "success",
         token,

@@ -41,7 +41,12 @@ const UserSchema = mongoose.Schema({
     },
     changedPasswordAt: Date,
     passwordResetToken: String,
-    passwordResetTokenExpires: Date
+    passwordResetTokenExpires: Date,
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    }
 })
 
 // Document Middleware : Pre save middleware
@@ -55,6 +60,13 @@ UserSchema.pre("save", async function (next) {
     // IF we want to delete a field from the document, we set it to undedfined
     this.confirmedPassword = undefined
 
+    next();
+})
+
+// Run this query before any query starts with `find`
+UserSchema.pre(/^find/, function(next) {
+    // this in the query middleare refers the query itself
+    this.find({active: {$ne: false}});
     next();
 })
 

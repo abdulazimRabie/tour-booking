@@ -12,6 +12,7 @@ router.patch("/resetPassword/:token", authController.resetPassword)
 router.patch("/updateMe", authController.protect, usersController.updateMe)
 
 router.patch("/updatePassword", authController.protect, authController.updatePassword)
+router.delete("/deleteMe", authController.protect, usersController.deleteMe)
 
 router.route("/")
     .get(usersController.getAllUsers)

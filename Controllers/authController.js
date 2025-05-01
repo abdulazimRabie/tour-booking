@@ -75,6 +75,8 @@ exports.login = catchAsync(async (req, res, next) => {
         return next(new AppError("Email or Password is wrong", 400));
     }
 
+    console.log(user)
+
     const token = signToken({id: user._id});
     user.password = undefined;
     // 3. everything is ok, send our regards

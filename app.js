@@ -1,7 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const mongoSantize = require("express-mongo-sanitize");
 const rateLimit = require("express-rate-limit");
+
 const tourRouter = require("./Routes/tours");
 const userRouter = require("./Routes/users");
 
@@ -10,15 +12,21 @@ const globalErrorHandler = require("./Controllers/errorController");
 
 const app = express();
 
-
 // MIDLLEWARES
-// 1. Set securtiy for HTTP headers
+// )> Set securtiy for HTTP headers
 app.use(helmet());
 
-// 2. middleware to be able to edit request body (data comes from requests)
+// )> middleware to be able to edit request body (data comes from requests)
+// )> body parser
 app.use(express.json());
 
-// 3. Limit requests of the same API
+// )> mongo sanitize data
+app.use(mongoSantize());
+
+// )> xss
+// app.use(xss())
+
+// )> Limit requests of the same API
 const limiter = rateLimit({
     windowMS: 60 * 60 * 1000, // one hour for the window
     limit: 3,
@@ -26,7 +34,7 @@ const limiter = rateLimit({
 })
 app.use("/api", limiter)
 
-// 4. Testing middleware
+// )> Testing middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     next();

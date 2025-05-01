@@ -8,7 +8,7 @@ class QueryHandler {
     filter() {
         const excludedFields = ["page", "sort", "limit", "fields"];
         let queryObj = {...this.queryObj};
-    
+        console.log(queryObj);
         excludedFields.forEach(field => delete queryObj[field]);
     
         console.log(queryObj);

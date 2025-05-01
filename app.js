@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const mongoSantize = require("express-mongo-sanitize");
+const hpp = require("hpp");
 const rateLimit = require("express-rate-limit");
 
 const tourRouter = require("./Routes/tours");
@@ -25,6 +26,25 @@ app.use(mongoSantize());
 
 // )> xss
 // app.use(xss())
+
+// )> hpp : http prameters pollution
+// prevent user from entring parameter more than one time. e.g: ?sort=name&sort=price
+// since express will return an array of parameters [name, price]. And it's not wanted at all
+app.use(hpp({
+    whitelist: [
+        "duration", 
+        "ratingAverage", 
+        "ratingQuantity", 
+        "maxGroupSize", 
+        "price",
+        "summary",
+        "description",
+        "id",
+        "durationInWeeks",
+        "imageCover",
+        "difficulty"
+    ]
+}));
 
 // )> Limit requests of the same API
 const limiter = rateLimit({

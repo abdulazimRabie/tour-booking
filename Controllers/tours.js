@@ -50,7 +50,7 @@ exports.processTourImages = catchAsync(async(req, res, next) => {
     req.body.imageCover = imageCoverName;
 
     // handling iamges
-    Promise.all(
+    await Promise.all(
         req.files.images.map(async (file, idx) => {
             const imageName = `tour-${req.params.id}-${Date.now()}-${idx + 1}.jpeg`;
 

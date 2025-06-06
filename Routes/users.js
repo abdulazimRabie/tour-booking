@@ -9,7 +9,7 @@ router.post("/login", authController.login)
 router.post("/forgotPassword", authController.forgotPassword)
 router.patch("/resetPassword/:token", authController.resetPassword)
 
-router.patch("/updateMe", authController.protect, usersController.updateMe)
+router.patch("/updateMe", authController.protect, usersController.uploadUserImages, usersController.updateMe)
 
 router.patch("/updatePassword", authController.protect, authController.updatePassword)
 router.delete("/deleteMe", authController.protect, usersController.deleteMe)

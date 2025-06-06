@@ -5,15 +5,16 @@ const dotenv = require("dotenv");
 
 dotenv.config({path: "./../../config.env"});
 
-const DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
+// const DB = process.env.DATABASE.replace("<db_password>", process.env.DATABASE_PASSWORD);
+const DB = process.env.DATABASE_LOCAL
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/cleaned-tour-data.json`));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
 
-mongoose.connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: true,
-    useUnifiedTopology: true
+mongoose.connect('mongodb://localhost:27017/tours', {
+    // useNewUrlParser: true,
+    // useCreateIndex: true,
+    // useFindAndModify: true,
+    // useUnifiedTopology: true
 }).then(_ => {
     console.log("Database Connected Successfuly");
     importData();

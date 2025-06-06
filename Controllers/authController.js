@@ -24,40 +24,52 @@ function createSendCookie(token, res) {
 exports.signup = catchAsync(async (req, res, next) => {
     // THIS LINE OF CODE IS A BIG MISTAKE. DON'T STORE ALL DATA USER ENTERS. PREVENT HIME FROM BEING AN ADMIN, FOR EXAMPLE
     // const newUser = await User.create({...req.body});
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
+    // const session = await mongoose.startSession();
+    // session.startTransaction();
+    // try {
+        console.log("we're gonna signup new user");
+        console.log(req.body);
         // 1. create a user
-        const newUser = await User.create([{
+        // const newUser = await User.create([{
+        //     name: req.body.name,
+        //     email: req.body.email,
+        //     password: req.body.password,
+        //     confirmedPassword: req.body.confirmedPassword,
+        //     // changedPasswordAt: req.body.changedPasswordAt,
+        //     // role: req.body.role
+        // }], {session});
+
+        const newUser = await User.create({
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
-            confirmedPassword: req.body.confirmedPassword,
-            // changedPasswordAt: req.body.changedPasswordAt,
-            // role: req.body.role
-        }], {session});
+            confirmedPassword: req.body.confirmedPassword
+        })
 
         console.log("NEW USER WITH TRANSACTION : \n", newUser);
     
         // 2. set a token to him
-        const token = signToken({id: newUser[0]._id});
+        // const token = signToken({id: newUser[0]._id});
+        const token = signToken({id: newUser._id});
         createSendCookie(token, res);
 
-        session.commitTransaction();
-        session.endSession();
+        // session.commitTransaction();
+        // session.endSession();
 
-        newUser[0].password = undefined;
-
+        // newUser[0].password = undefined;
+        newUser.password = undefined;
+        
         res.status(201).json({
             status: "success",
             token,
             data: {
-                user: newUser[0]
+                // user: newUser[0]
+                user: newUser
             }
         });
-    } catch (error) {
-        next(error);
-    }
+    // } catch (error) {
+    //     next(error);
+    // }
 })
 
 exports.login = catchAsync(async (req, res, next) => {

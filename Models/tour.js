@@ -21,7 +21,7 @@ const tourSchema = mongoose.Schema({
         required: [true, "Difficulty is required"],
         trim: true,
         enum: {
-            values: ["easy", "midium", "difficult"],
+            values: ["easy", "medium", "difficult"],
             message: "Difficulty is either : easy, medium, difficult"
         }
     },
@@ -73,12 +73,36 @@ const tourSchema = mongoose.Schema({
     secretTour: {
         type: Boolean,
         default: false
-    }
+    },
+    startLocation: {
+        // GeoJSON
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String,
+        description: String
+    },
+    locations: [{
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+        },
+        coordinates: [Number],
+        address: String,
+        description: String
+    }]
 
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
 })
+
+tourSchema.index({ startLocation: '2dsphere' })
+
 // VIRTUAL PROPERTIES
 tourSchema.virtual("durationInWeeks").get(function () {
     return this.duration / 7;
@@ -133,11 +157,11 @@ tourSchema.post(/^find/, function(docs, next) {
 })
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre("aggregate", function(next) {
-    // this.pipeline().unshift({$match : {secretTour : {$ne : true}} });
-    console.log(this.pipeline());
-    next();
-})
+// tourSchema.pre("aggregate", function(next) {
+//     // this.pipeline().unshift({$match : {secretTour : {$ne : true}} });
+//     console.log(this.pipeline());
+//     next();
+// })
 
 const Tour = mongoose.model("Tour", tourSchema);
 

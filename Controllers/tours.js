@@ -39,29 +39,32 @@ exports.uplaodTourImages = upload.fields([
 
 exports.processTourImages = catchAsync(async(req, res, next) => {
     console.log('REQ FILES: ', req.files);
-
-    // handling image cover
-    const imageCoverName = `tour-cover-${req.params.id}-${Date.now()}.jpeg`
-    await sharp(req.files.imageCover[0].buffer)
-        .resize(300, 300)
-        .toFormat("jpeg")
-        .toFile(`uploads/tours/${imageCoverName}`)
+    if (req.files) {
+        // handling image cover
+        const imageCoverName = `tour-cover-${req.params.id}-${Date.now()}.jpeg`
+        await sharp(req.files.imageCover[0].buffer)
+            .resize(300, 300)
+            .toFormat("jpeg")
+            .toFile(`uploads/tours/${imageCoverName}`)
+        
+        req.body.imageCover = imageCoverName;
     
-    req.body.imageCover = imageCoverName;
-
-    // handling iamges
-    await Promise.all(
-        req.files.images.map(async (file, idx) => {
-            const imageName = `tour-${req.params.id}-${Date.now()}-${idx + 1}.jpeg`;
-
-            await sharp(file.buffer)
-                .resize(2000, 1333)
-                .toFormat("jpeg")
-                .toFile(`uploads/tours/${imageName}`)
-            
-            req.body.images.push(imageName);
-        })
-    );
+        // handling iamges
+        await Promise.all(
+            req.files.images.map(async (file, idx) => {
+                const imageName = `tour-${req.params.id}-${Date.now()}-${idx + 1}.jpeg`;
+    
+                await sharp(file.buffer)
+                    .resize(2000, 1333)
+                    .toFormat("jpeg")
+                    .toFile(`uploads/tours/${imageName}`)
+                
+                req.body.images.push(imageName);
+            })
+        );
+    } else if (!req.tour && !req.tour.isNew) {
+        req.body.imageCover = 'default-image-cover.jpg';
+    }
 
     next();
 });
@@ -128,7 +131,7 @@ exports.createTour = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
     console.log("GET TOUR CONTROLLER IS WORKING BEFORE THE QUERY");
-    const tour = await Tour.findById(req.params.id);
+    const tour = await Tour.findById(req.params.id).populate("reviews");
     console.log("AFTER THE QUERY")
 
     if (!tour) {

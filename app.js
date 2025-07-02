@@ -7,6 +7,7 @@ const rateLimit = require("express-rate-limit");
 
 const tourRouter = require("./Routes/tours");
 const userRouter = require("./Routes/users");
+const reviewRouter = require("./Routes/review");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./Controllers/errorController");
@@ -66,6 +67,7 @@ app.use(express.static(`${__dirname}/public`))
 // ROUTES
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/reviews", reviewRouter);
 app.all("*", (req, res, next) => {
     const error = new AppError(`Cannot Handle THIS ROUTE : ${req.originalUrl}`, 404);
     next(error);

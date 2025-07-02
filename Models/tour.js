@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const User = require("./user");
 
 const tourSchema = mongoose.Schema({
     name : {
@@ -94,7 +95,13 @@ const tourSchema = mongoose.Schema({
         coordinates: [Number],
         address: String,
         description: String
-    }]
+    }],
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+        }
+    ]
 
 }, {
     toJSON: {virtuals: true},
@@ -108,6 +115,13 @@ tourSchema.virtual("durationInWeeks").get(function () {
     return this.duration / 7;
 })
 
+// Virtaul populate
+tourSchema.virtual("reviews", {
+    ref: "Review",
+    foreignField: "tour",
+    localField: "_id"
+})
+
 // DOCUMENT MIDDLEWARE
 tourSchema.pre("save", function(next) {
     console.log(this);
@@ -118,6 +132,12 @@ tourSchema.post("save", function(doc, next) {
     console.log("Document has been saved ==> ", doc);
     next();
 })
+
+// tourSchema.pre("save", async function(next) {
+//     const userPromises = this.guides.map(async userId => await User.findById(userId));
+//     this.guides = await Promise.all(userPromises);
+//     next();
+// })
 
 // QUERY MIDDLEWARE
 // tourSchema.pre("find", function(next) {
@@ -146,6 +166,11 @@ tourSchema.pre(/^find/, async function(next) {
         console.log("Query: ", this.getQuery());
         console.log("Document to Update: ", docToUpdate);
     }
+
+    this.populate({
+        path: "guides",
+        select: "-__v"
+    })
 
     next();
 })

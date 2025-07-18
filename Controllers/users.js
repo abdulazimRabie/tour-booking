@@ -1,6 +1,7 @@
 const User = require("../Models/user");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+const factory = require("../Services/factory");
 const multer = require("multer");
 
 // Utili Functions
@@ -120,13 +121,4 @@ exports.deleteUser = (req, res) => {
     })
 }
 
-exports.getUser = (req, res) => {
-    res
-    .status(202)
-    .json({
-        status : "success",
-        data : {
-            done: true
-        }
-    })
-}
+exports.getUser = factory.findOne(User, {});

@@ -33,7 +33,8 @@ const UserSchema = mongoose.Schema({
             },
             message: "The passwrod and its confirmation aren't identical"
 
-        }
+        },
+        select: false
     },
     role: {
         type: String,

@@ -1,10 +1,12 @@
 const express = require("express");
 const toursController = require("./../Controllers/tours");
-const authController = require("../Controllers/authController");
-const reviewController = require("../Controllers/reviews");
+const authController = require("../Controllers/auth");
+const reviewRouter = require("../Routes/review");
 const {validateTour , validateTourBody, topFiveTours} = require("./../Middlewares/tours");
 
 const router = express.Router();
+
+router.use("/:tourId/reviews", reviewRouter);
 
 router.get("/top-5-tours", topFiveTours, toursController.getAllTours);
 
@@ -38,10 +40,11 @@ router.get("/nearest-tours/:latlng/unit/:unit", toursController.getNearestTours)
 
 // POST api/v1/tours/3432fsdc32d/reviews (create new review on a specific tour)
 // GET api/v1/tours/3324398d/reviews (get all tours of a specific tour)
-router.route("/:tourId/reviews")
-    .post(authController.protect, authController.restrictedTo("user"), reviewController.createReview)
+// router.route("/:tourId/reviews")
+//     .post(authController.protect, authController.restrictedTo("user"), reviewController.createReview)
 
-router.route("/:tourId/reviews/:reviewId")
-    .get(reviewController.getReview)
+
+// router.route("/:tourId/reviews/:reviewId")
+//     .get(reviewController.getReview)
 
 module.exports = router;

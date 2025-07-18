@@ -45,7 +45,10 @@ const tourSchema = mongoose.Schema({
         type: Number,
         default: 4.5,
         min: [1.0 , "Rating Average must be above 1.0"],
-        max: [5.0 , "Rating Average must be below 5.0"]
+        max: [5.0 , "Rating Average must be below 5.0"],
+        set: val => Math.round(val * 10) / 10 
+        // 4.66666 ===> round() = 5
+        // 4.66666 * 10 = 46.666 ====> round() = 47 ====> 47/10 = 4.7
     },
     ratingQuantity: {
         type: Number,
@@ -108,6 +111,7 @@ const tourSchema = mongoose.Schema({
     toObject: {virtuals: true}
 })
 
+tourSchema.index({price: 1})
 tourSchema.index({ startLocation: '2dsphere' })
 
 // VIRTUAL PROPERTIES

@@ -1,12 +1,12 @@
 const Review = require("../Models/review");
 const catchAsync = require("../utils/catchAsync");
+const factory = require("../Services/factory");
 
 exports.getAllReview = catchAsync(async (req, res, next) => {
-    const reviews = await Review.find().populate([
-        {
-            path: "tour",
-            select: "-__v"
-        },
+    let filter = {};
+    if (req.params.tourId) filter = {tour: req.params.tourId};
+
+    const reviews = await Review.find(filter).populate([
         {
             path: "user",
             select: "-__v"
@@ -40,18 +40,13 @@ exports.createReview = catchAsync(async (req, res, next) => {
     })
 })
 
-exports.getReview = catchAsync(async (req, res, next) => {
-    // {review : "fda", rating: 1, tour: "fdas341d", user: "fdsakj932d"}
+exports.getReview = factory.findOne(Review, {
+    populate: [
+        {path: "tour"},
+        {path: "user"}
+    ]
+});
 
-    const {content, rating, tour, user} = req.body;
-    const newReview = await Review.create({
-        content, rating , tour, user
-    })
+exports.updateReview = factory.updateOne(Review);
 
-    res.status(201).json({
-        status: "success",
-        data: {
-            newReview
-        }
-    })
-})
+exports.deleteReview = factory.deleteOne(Review)
